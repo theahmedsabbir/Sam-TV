@@ -1,0 +1,8 @@
+## Copy to local.properties (git-ignored) and fill in.
+## Android Studio usually writes sdk.dir automatically.
+
+sdk.dir=/home/YOU/Android/Sdk
+
+# Media server root — change this to switch servers
+# Example: http://172.16.50.14/DHAKA-FLIX-14/
+BASE_URL=http://127.0.0.1/

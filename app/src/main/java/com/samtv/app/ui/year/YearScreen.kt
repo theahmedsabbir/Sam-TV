@@ -35,16 +35,19 @@ import kotlinx.coroutines.withContext
 @Composable
 fun YearScreen(
     categoryTitle: String,
+    serverId: String,
     categoryPath: String,
     onYearClick: (DirEntry) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var state by remember(categoryPath) { mutableStateOf<UiState<List<DirEntry>>>(UiState.Loading) }
+    var state by remember(serverId, categoryPath) {
+        mutableStateOf<UiState<List<DirEntry>>>(UiState.Loading)
+    }
 
-    LaunchedEffect(categoryPath) {
+    LaunchedEffect(serverId, categoryPath) {
         state = UiState.Loading
         state = withContext(Dispatchers.IO) {
-            runCatching { MediaRepository.listYears(categoryPath) }
+            runCatching { MediaRepository.listYears(serverId, categoryPath) }
                 .fold(
                     onSuccess = { UiState.Ready(it) },
                     onFailure = { UiState.Error(it.message ?: "Failed to load years") },

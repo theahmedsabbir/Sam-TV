@@ -29,7 +29,8 @@ android {
         versionCode = 1
         versionName = "0.1.0"
 
-        buildConfigField("String", "BASE_URL", "\"${localProp("BASE_URL", "http://127.0.0.1/")}\"")
+        buildConfigField("String", "SERVER_7", "\"${localProp("SERVER_7", "http://127.0.0.1/")}\"")
+        buildConfigField("String", "SERVER_14", "\"${localProp("SERVER_14", "http://127.0.0.1/")}\"")
     }
 
     buildFeatures {

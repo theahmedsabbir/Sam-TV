@@ -20,7 +20,6 @@ import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
-import com.samtv.app.config.AppConfig
 import com.samtv.app.data.Catalog
 import com.samtv.app.data.Category
 import com.samtv.app.data.CategoryRow
@@ -42,7 +41,7 @@ fun HomeScreen(
             color = MaterialTheme.colorScheme.primary,
         )
         Text(
-            text = AppConfig.baseUrl,
+            text = "Server 7 + 14",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
             maxLines = 1,

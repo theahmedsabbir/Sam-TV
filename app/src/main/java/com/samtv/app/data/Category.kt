@@ -3,7 +3,9 @@ package com.samtv.app.data
 data class Category(
     val id: String,
     val title: String,
-    /** Path relative to [com.samtv.app.config.AppConfig.baseUrl] */
+    /** "7" or "14" — resolved via [com.samtv.app.config.AppConfig.baseUrl] */
+    val serverId: String,
+    /** Path relative to that server root */
     val path: String,
 )
 
@@ -17,49 +19,49 @@ object Catalog {
         CategoryRow(
             title = "English",
             categories = listOf(
-                Category("en", "English Movies", "English Movies"),
-                Category("en1080", "English Movies-1080p", "English Movies-1080p"),
-                Category("imdb", "IMDb Top-250 Movies", "IMDb Top-250 Movies"),
+                Category("en", "English Movies", "7", "English Movies"),
+                Category("en1080", "English Movies (1080p)", "14", "English Movies (1080p)"),
+                Category("imdb", "IMDb Top-250 Movies", "14", "IMDb Top-250 Movies"),
             ),
         ),
         CategoryRow(
             title = "Hindi & South",
             categories = listOf(
-                Category("hi", "Hindi Movies", "Hindi Movies"),
-                Category("south_dub", "South-Movie Hindi Dubbed", "South-Movie Hindi Dubbed"),
-                Category("south", "South Indian Movies", "South Indian Movies"),
+                Category("hi", "Hindi Movies", "14", "Hindi Movies"),
+                Category("south_dub", "South-Movie Hindi Dubbed", "14", "South-Movie Hindi Dubbed"),
+                Category("south", "SOUTH INDIAN MOVIES", "14", "SOUTH INDIAN MOVIES"),
             ),
         ),
         CategoryRow(
             title = "Bangla & Foreign",
             categories = listOf(
-                Category("foreign", "Foreign Movies", "Foreign Movies"),
-                Category("kolkata", "Kolkata Bangla Movies", "Kolkata Bangla Movies"),
-                Category("satyajit", "Satyajit Ray Films", "Satyajit Ray Films"),
+                Category("foreign", "Foreign Language Movies", "7", "Foreign Language Movies"),
+                Category("kolkata", "Kolkata Bangla Movies", "7", "Kolkata Bangla Movies"),
+                Category("satyajit", "Satyajit Ray Films", "7", "Satyajit Ray Films"),
             ),
         ),
         CategoryRow(
             title = "Series",
             categories = listOf(
-                Category("tv", "TV & WEB Series", "TV & WEB Series"),
-                Category("korean", "KOREAN TV & WEB Series", "KOREAN TV & WEB Series"),
-                Category("cartoon_tv", "Cartoon TV Series", "Cartoon TV Series"),
+                Category("tv", "TV & WEB Series", "14", "TV & WEB Series"),
+                Category("korean", "KOREAN TV & WEB Series", "14", "KOREAN TV & WEB Series"),
+                Category("cartoon_tv", "Cartoon TV Series", "14", "Cartoon TV Series"),
             ),
         ),
         CategoryRow(
             title = "Animation & 3D",
             categories = listOf(
-                Category("anim", "Animation Movies", "Animation Movies"),
-                Category("anim1080", "Animation Movies-1080p", "Animation Movies-1080p"),
-                Category("3d", "3D Movies", "3D Movies"),
+                Category("anim", "Animation Movies", "14", "Animation Movies"),
+                Category("anim1080", "Animation Movies (1080p)", "14", "Animation Movies (1080p)"),
+                Category("3d", "3D Movies", "7", "3D Movies"),
             ),
         ),
         CategoryRow(
             title = "More",
             categories = listOf(
-                Category("doc", "Documentary", "Documentary"),
-                Category("wwe", "WWE & AEW Wrestling", "WWE & AEW Wrestling"),
-                Category("awards", "AWARDS & TV SHOWS", "AWARDS & TV SHOWS"),
+                Category("doc", "Documentary", "14", "Documentary"),
+                Category("wwe", "WWE & AEW Wrestling", "14", "WWE & AEW Wrestling"),
+                Category("awards", "AWARDS & TV SHOWS", "14", "AWARDS & TV SHOWS"),
             ),
         ),
     )

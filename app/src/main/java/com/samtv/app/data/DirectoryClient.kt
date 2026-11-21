@@ -49,6 +49,16 @@ object DirectoryClient {
         }?.url ?: images.firstOrNull()?.url
     }
 
+    fun findVideoUrl(folderUrl: String): String? {
+        val videos = list(folderUrl).filter { entry ->
+            !entry.isDirectory && isVideoFile(entry.name)
+        }
+        return videos.firstOrNull { entry ->
+            val name = entry.name.lowercase()
+            !name.contains("sample") && !name.contains("trailer")
+        }?.url ?: videos.firstOrNull()?.url
+    }
+
     private fun listViaH5ai(pageUrl: String): List<DirEntry> {
         val page = URL(pageUrl)
         val origin = "${page.protocol}://${page.authority}"
@@ -237,5 +247,17 @@ object DirectoryClient {
             lower.endsWith(".jpeg") ||
             lower.endsWith(".png") ||
             lower.endsWith(".webp")
+    }
+
+    private fun isVideoFile(name: String): Boolean {
+        val lower = name.lowercase()
+        return lower.endsWith(".mkv") ||
+            lower.endsWith(".mp4") ||
+            lower.endsWith(".avi") ||
+            lower.endsWith(".m4v") ||
+            lower.endsWith(".mov") ||
+            lower.endsWith(".webm") ||
+            lower.endsWith(".ts") ||
+            lower.endsWith(".m2ts")
     }
 }

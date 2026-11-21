@@ -3,6 +3,6 @@
 
 sdk.dir=/home/YOU/Android/Sdk
 
-# Media server root — change this to switch servers
-# Example: http://172.16.50.14/DHAKA-FLIX-14/
-BASE_URL=http://127.0.0.1/
+# Per-server roots — change these to point at other media hosts
+SERVER_7=http://127.0.0.1/DHAKA-FLIX-7/
+SERVER_14=http://127.0.0.1/DHAKA-FLIX-14/

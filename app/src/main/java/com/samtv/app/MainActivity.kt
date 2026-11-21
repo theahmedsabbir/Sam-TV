@@ -1,12 +1,11 @@
 package com.samtv.app
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.tv.material3.ExperimentalTvMaterial3Api
-import com.samtv.app.ui.home.HomeScreen
+import com.samtv.app.ui.nav.SamNavHost
 import com.samtv.app.ui.theme.SamTvTheme
 
 class MainActivity : ComponentActivity() {
@@ -16,15 +15,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SamTvTheme {
-                HomeScreen(
-                    onCategoryClick = { category ->
-                        Toast.makeText(
-                            this,
-                            category.title,
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                    },
-                )
+                SamNavHost()
             }
         }
     }

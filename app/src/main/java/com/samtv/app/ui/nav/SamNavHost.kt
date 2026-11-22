@@ -73,6 +73,11 @@ fun SamNavHost(modifier: Modifier = Modifier) {
                 onYearClick = { year ->
                     navController.navigate(Routes.movies(year.name, year.url))
                 },
+                onFlatCategory = { categoryUrl ->
+                    navController.navigate(Routes.movies(title, categoryUrl)) {
+                        popUpTo(Routes.HOME) { inclusive = false }
+                    }
+                },
             )
         }
 

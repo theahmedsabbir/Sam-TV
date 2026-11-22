@@ -41,7 +41,7 @@ fun HomeScreen(
             color = MaterialTheme.colorScheme.primary,
         )
         Text(
-            text = "Server 7 + 14",
+            text = "Servers 7 / 10 / 12 / 14",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
             maxLines = 1,

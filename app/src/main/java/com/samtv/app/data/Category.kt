@@ -3,9 +3,9 @@ package com.samtv.app.data
 data class Category(
     val id: String,
     val title: String,
-    /** "7" or "14" — resolved via [com.samtv.app.config.AppConfig.baseUrl] */
+    /** Server id resolved via [com.samtv.app.config.AppConfig.baseUrl] */
     val serverId: String,
-    /** Path relative to that server root */
+    /** Path relative to that server root (may include nested folders) */
     val path: String,
 )
 
@@ -28,7 +28,12 @@ object Catalog {
             title = "Hindi & South",
             categories = listOf(
                 Category("hi", "Hindi Movies", "14", "Hindi Movies"),
-                Category("south_dub", "South-Movie Hindi Dubbed", "14", "South-Movie Hindi Dubbed"),
+                Category(
+                    "south_dub",
+                    "South-Movie Hindi Dubbed",
+                    "14",
+                    "SOUTH INDIAN MOVIES/Hindi Dubbed",
+                ),
                 Category("south", "SOUTH INDIAN MOVIES", "14", "SOUTH INDIAN MOVIES"),
             ),
         ),
@@ -43,9 +48,14 @@ object Catalog {
         CategoryRow(
             title = "Series",
             categories = listOf(
-                Category("tv", "TV & WEB Series", "14", "TV & WEB Series"),
+                Category("tv", "TV & WEB Series", "12", "TV-WEB-Series"),
                 Category("korean", "KOREAN TV & WEB Series", "14", "KOREAN TV & WEB Series"),
-                Category("cartoon_tv", "Cartoon TV Series", "14", "Cartoon TV Series"),
+                Category(
+                    "cartoon_tv",
+                    "Anime & Cartoon TV Series",
+                    "10",
+                    "Anime & Cartoon TV Series",
+                ),
             ),
         ),
         CategoryRow(
@@ -59,9 +69,10 @@ object Catalog {
         CategoryRow(
             title = "More",
             categories = listOf(
-                Category("doc", "Documentary", "14", "Documentary"),
-                Category("wwe", "WWE & AEW Wrestling", "14", "WWE & AEW Wrestling"),
-                Category("awards", "AWARDS & TV SHOWS", "14", "AWARDS & TV SHOWS"),
+                Category("doc", "Documentary", "10", "Documentary"),
+                Category("wwe", "WWE & AEW Wrestling", "10", "WWE & AEW Wrestling"),
+                Category("awards", "Awards & TV Shows", "10", "Awards & TV Shows"),
+                Category("tutorial", "Tutorial", "10", "Tutorial"),
             ),
         ),
     )

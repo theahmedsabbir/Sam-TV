@@ -38,6 +38,7 @@ fun YearScreen(
     serverId: String,
     categoryPath: String,
     onYearClick: (DirEntry) -> Unit,
+    onFlatCategory: (categoryUrl: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var state by remember(serverId, categoryPath) {
@@ -46,13 +47,26 @@ fun YearScreen(
 
     LaunchedEffect(serverId, categoryPath) {
         state = UiState.Loading
-        state = withContext(Dispatchers.IO) {
-            runCatching { MediaRepository.listYears(serverId, categoryPath) }
-                .fold(
-                    onSuccess = { UiState.Ready(it) },
-                    onFailure = { UiState.Error(it.message ?: "Failed to load years") },
-                )
+        val result = withContext(Dispatchers.IO) {
+            runCatching {
+                val url = MediaRepository.categoryUrl(serverId, categoryPath)
+                val entries = MediaRepository.listYears(serverId, categoryPath)
+                Triple(url, entries, MediaRepository.looksLikeYearList(entries))
+            }
         }
+
+        result.fold(
+            onSuccess = { (url, entries, isYearList) ->
+                if (!isYearList) {
+                    onFlatCategory(url)
+                } else {
+                    state = UiState.Ready(entries)
+                }
+            },
+            onFailure = {
+                state = UiState.Error(it.message ?: "Failed to load years")
+            },
+        )
     }
 
     Column(

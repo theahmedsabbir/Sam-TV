@@ -30,6 +30,8 @@ android {
         versionName = "0.1.0"
 
         buildConfigField("String", "SERVER_7", "\"${localProp("SERVER_7", "http://127.0.0.1/")}\"")
+        buildConfigField("String", "SERVER_10", "\"${localProp("SERVER_10", "http://127.0.0.1/")}\"")
+        buildConfigField("String", "SERVER_12", "\"${localProp("SERVER_12", "http://127.0.0.1/")}\"")
         buildConfigField("String", "SERVER_14", "\"${localProp("SERVER_14", "http://127.0.0.1/")}\"")
     }
 

@@ -5,4 +5,6 @@ sdk.dir=/home/YOU/Android/Sdk
 
 # Per-server roots — change these to point at other media hosts
 SERVER_7=http://127.0.0.1/DHAKA-FLIX-7/
+SERVER_10=http://127.0.0.1/DHAKA-FLIX-10/
+SERVER_12=http://127.0.0.1/DHAKA-FLIX-12/
 SERVER_14=http://127.0.0.1/DHAKA-FLIX-14/

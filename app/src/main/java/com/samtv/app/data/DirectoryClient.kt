@@ -6,6 +6,9 @@ import java.net.URL
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 object DirectoryClient {
     private val hrefRegex = Regex(
@@ -124,9 +127,26 @@ object DirectoryClient {
                 origin.trimEnd('/') + "/" + itemHref.trimStart('/')
             }
             val normalized = if (isDirectory && !absolute.endsWith('/')) "$absolute/" else absolute
-            result += DirEntry(name = name, url = normalized, isDirectory = isDirectory)
+            result += DirEntry(
+                name = name,
+                url = normalized,
+                isDirectory = isDirectory,
+                modifiedAt = readModifiedAt(item),
+            )
         }
         return result
+    }
+
+    private fun readModifiedAt(item: JSONObject): Long {
+        if (!item.has("time")) return 0L
+        val raw = item.opt("time") ?: return 0L
+        val value = when (raw) {
+            is Number -> raw.toLong()
+            is String -> raw.toLongOrNull() ?: return 0L
+            else -> return 0L
+        }
+        // h5ai usually sends unix seconds
+        return if (value in 1..<1_000_000_000_000L) value * 1000L else value
     }
 
     private fun postJson(url: String, jsonBody: String): String {
@@ -171,6 +191,9 @@ object DirectoryClient {
     }
 
     private fun parseHtml(html: String, pageUrl: String): List<DirEntry> {
+        val fromFallback = parseFallbackTable(html, pageUrl)
+        if (fromFallback.isNotEmpty()) return fromFallback
+
         val base = URL(pageUrl)
         val seen = LinkedHashSet<String>()
         val result = mutableListOf<DirEntry>()
@@ -202,6 +225,66 @@ object DirectoryClient {
         }
 
         return result
+    }
+
+    /**
+     * h5ai noscript fallback table includes Last modified in fb-d cells.
+     * API is often blocked (404) on these servers, so this is the date source.
+     */
+    private fun parseFallbackTable(html: String, pageUrl: String): List<DirEntry> {
+        val base = URL(pageUrl)
+        val rowRegex = Regex(
+            """<td class="fb-n">\s*<a href="([^"]+)">([^<]*)</a>\s*</td>\s*<td class="fb-d">([^<]*)</td>""",
+            setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL),
+        )
+        val seen = LinkedHashSet<String>()
+        val result = mutableListOf<DirEntry>()
+
+        for (match in rowRegex.findAll(html)) {
+            val rawHref = match.groupValues[1].trim()
+            val linkText = match.groupValues[2].trim()
+            val dateText = match.groupValues[3].trim()
+
+            if (rawHref == ".." || linkText.equals("Parent Directory", true)) continue
+
+            val absolute = runCatching { URL(base, rawHref) }.getOrNull() ?: continue
+            val absoluteUrl = absolute.toString()
+            if (!seen.add(absoluteUrl)) continue
+
+            val path = absolute.path
+            val name = linkText.ifBlank {
+                path.trimEnd('/').substringAfterLast('/').let {
+                    URLDecoder.decode(it, StandardCharsets.UTF_8)
+                }
+            }
+            if (name.isEmpty() || name == "." || name == "..") continue
+
+            val isDirectory = path.endsWith('/') || !name.contains('.')
+            val normalized = if (isDirectory && !absoluteUrl.endsWith('/')) {
+                "$absoluteUrl/"
+            } else {
+                absoluteUrl
+            }
+
+            result += DirEntry(
+                name = name,
+                url = normalized,
+                isDirectory = isDirectory,
+                modifiedAt = parseFbDate(dateText),
+            )
+        }
+        return result
+    }
+
+    private fun parseFbDate(text: String): Long {
+        val trimmed = text.trim()
+        if (trimmed.isEmpty()) return 0L
+        return runCatching {
+            val format = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+            format.parse(trimmed)?.time ?: 0L
+        }.getOrDefault(0L)
     }
 
     private fun List<DirEntry>.filterVisible(parentUrl: String): List<DirEntry> {

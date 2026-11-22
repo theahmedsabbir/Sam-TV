@@ -27,8 +27,23 @@ object MediaRepository {
     fun listMovies(yearUrl: String): List<MovieItem> {
         return DirectoryClient.list(yearUrl)
             .filter { it.isDirectory }
-            .map { MovieItem(title = it.name, folderUrl = it.url) }
-            .sortedBy { it.title.lowercase() }
+            .map {
+                MovieItem(
+                    title = it.name,
+                    folderUrl = it.url,
+                    modifiedAt = it.modifiedAt,
+                )
+            }
+    }
+
+    fun sortedMovies(movies: List<MovieItem>, sort: MovieSort): List<MovieItem> {
+        return when (sort) {
+            MovieSort.NEWEST -> movies.sortedWith(
+                compareByDescending<MovieItem> { it.modifiedAt }
+                    .thenBy { it.title.lowercase() },
+            )
+            MovieSort.NAME -> movies.sortedBy { it.title.lowercase() }
+        }
     }
 
     /**

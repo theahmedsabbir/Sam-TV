@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,9 +32,9 @@ import androidx.tv.material3.Text
 import coil.compose.AsyncImage
 import com.samtv.app.data.MediaRepository
 import com.samtv.app.data.MovieItem
+import com.samtv.app.data.MovieSort
 import com.samtv.app.ui.common.ErrorBox
 import com.samtv.app.ui.common.LoadingBox
-import com.samtv.app.ui.common.ScreenHeader
 import com.samtv.app.ui.common.UiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -47,6 +48,7 @@ fun MovieGridScreen(
     modifier: Modifier = Modifier,
 ) {
     var state by remember(yearUrl) { mutableStateOf<UiState<List<MovieItem>>>(UiState.Loading) }
+    var sort by remember(yearUrl) { mutableStateOf(MovieSort.NEWEST) }
 
     LaunchedEffect(yearUrl) {
         state = UiState.Loading
@@ -64,7 +66,35 @@ fun MovieGridScreen(
             .fillMaxSize()
             .padding(horizontal = 48.dp, vertical = 28.dp),
     ) {
-        ScreenHeader(title = yearTitle, subtitle = "Movies")
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 18.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = yearTitle,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = "Movies",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+            SortChip(
+                sort = sort,
+                onClick = {
+                    sort = if (sort == MovieSort.NEWEST) MovieSort.NAME else MovieSort.NEWEST
+                },
+            )
+        }
 
         when (val current = state) {
             UiState.Loading -> LoadingBox()
@@ -73,6 +103,9 @@ fun MovieGridScreen(
                 if (current.data.isEmpty()) {
                     ErrorBox("No movies found")
                 } else {
+                    val movies = remember(current.data, sort) {
+                        MediaRepository.sortedMovies(current.data, sort)
+                    }
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(5),
                         horizontalArrangement = Arrangement.spacedBy(14.dp),
@@ -80,7 +113,7 @@ fun MovieGridScreen(
                         contentPadding = PaddingValues(bottom = 32.dp),
                         modifier = Modifier.fillMaxSize(),
                     ) {
-                        items(current.data, key = { it.folderUrl }) { movie ->
+                        items(movies, key = { it.folderUrl }) { movie ->
                             MovieCard(
                                 movie = movie,
                                 onClick = { onMovieClick(movie) },
@@ -90,6 +123,34 @@ fun MovieGridScreen(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalTvMaterial3Api::class)
+@Composable
+private fun SortChip(
+    sort: MovieSort,
+    onClick: () -> Unit,
+) {
+    val label = when (sort) {
+        MovieSort.NEWEST -> "Sort: Newest"
+        MovieSort.NAME -> "Sort: Name"
+    }
+    Surface(
+        onClick = onClick,
+        colors = ClickableSurfaceDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            focusedContainerColor = MaterialTheme.colorScheme.secondary,
+            pressedContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.85f),
+        ),
+        scale = ClickableSurfaceDefaults.scale(focusedScale = 1.05f),
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+        )
     }
 }
 
